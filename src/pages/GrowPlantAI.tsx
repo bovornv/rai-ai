@@ -24,6 +24,7 @@ interface ScanData {
 }
 
 const GrowPlantAI = () => {
+  console.log('GrowPlantAI component loaded');
   const [currentView, setCurrentView] = useState<View>('home');
   const [currentScan, setCurrentScan] = useState<ScanData | null>(null);
   const [scanHistory, setScanHistory] = useState<ScanData[]>([]);
