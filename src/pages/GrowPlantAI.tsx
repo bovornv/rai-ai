@@ -23,7 +23,7 @@ interface ScanData {
   advice: string[];
 }
 
-const RaiAI = () => {
+const GrowPlantAI = () => {
   const [currentView, setCurrentView] = useState<View>('home');
   const [currentScan, setCurrentScan] = useState<ScanData | null>(null);
   const [scanHistory, setScanHistory] = useState<ScanData[]>([]);
@@ -71,7 +71,7 @@ const HomeView = ({ onNavigate }: { onNavigate: (view: View) => void }) => {
       <div className="text-center py-6">
         <div className="flex items-center justify-center gap-2 mb-2">
           <Leaf className="h-8 w-8 text-primary" />
-          <h1 className="text-3xl font-bold text-primary">RaiAI</h1>
+          <h1 className="text-3xl font-bold text-primary">GrowPlantAI</h1>
         </div>
         <p className="text-muted-foreground">ผู้ช่วยเกษตรกรอัจฉริยะ</p>
         <p className="text-sm text-muted-foreground">AI Farming Assistant</p>
@@ -210,7 +210,7 @@ const SettingsView = ({ onBack }: { onBack: () => void }) => {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              RaiAI v1.0.0<br />
+              GrowPlantAI v1.0.0<br />
               สำหรับเกษตรกรข้าวไทย<br />
               For Thai Rice Farmers
             </p>
@@ -221,4 +221,4 @@ const SettingsView = ({ onBack }: { onBack: () => void }) => {
   );
 };
 
-export default RaiAI;
+export default GrowPlantAI;

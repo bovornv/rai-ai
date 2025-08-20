@@ -1,7 +1,7 @@
-import RaiAI from "./RaiAI";
+import GrowPlantAI from "./GrowPlantAI";
 
 const Index = () => {
-  return <RaiAI />;
+  return <GrowPlantAI />;
 };
 
 export default Index;
