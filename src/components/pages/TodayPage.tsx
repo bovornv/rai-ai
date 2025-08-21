@@ -16,7 +16,7 @@ interface TodayPageProps {
 
 const TodayPage = ({ selectedCrop, onCropChange, onNavigate }: TodayPageProps) => {
   const [sprayStatus] = useState<'good' | 'caution' | 'stop'>('good');
-  const [currentArea, setCurrentArea] = useState<string | null>('ต.บางปลาม้า, สุพรรณบุรี');
+  const [currentArea, setCurrentArea] = useState<string | null>('ต.เทพาลัย, นครราชสีมา');
   const [showLocationSheet, setShowLocationSheet] = useState(false);
   
   const sprayStatusConfig = {
