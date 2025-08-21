@@ -1,4 +1,3 @@
-import React from 'react';
 import { MapPin, Search, Map } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -9,10 +8,10 @@ interface FieldLocationRowProps {
   currentLocation?: { lat: number; lng: number; name: string };
 }
 
-export const FieldLocationRow: React.FC<FieldLocationRowProps> = ({
+export const FieldLocationRow = ({
   onLocationSet,
   currentLocation
-}) => {
+}: FieldLocationRowProps) => {
   const handleUseCurrent = async () => {
     try {
       const location = await LocationService.resolvePreciseOnce();

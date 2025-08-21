@@ -1,4 +1,3 @@
-import React from 'react';
 import { MapPin, Edit2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -7,10 +6,10 @@ interface LocationChipProps {
   onLocationClick: () => void;
 }
 
-export const LocationChip: React.FC<LocationChipProps> = ({ 
+export const LocationChip = ({ 
   currentArea, 
   onLocationClick 
-}) => {
+}: LocationChipProps) => {
   return (
     <Button
       variant="outline"

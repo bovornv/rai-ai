@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { MapPin, Search, Map, X } from 'lucide-react';
 import {
   Sheet,
@@ -21,12 +21,12 @@ interface LocationBottomSheetProps {
   currentArea?: string;
 }
 
-export const LocationBottomSheet: React.FC<LocationBottomSheetProps> = ({
+export const LocationBottomSheet = ({
   isOpen,
   onClose,
   onLocationSet,
   currentArea
-}) => {
+}: LocationBottomSheetProps) => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
