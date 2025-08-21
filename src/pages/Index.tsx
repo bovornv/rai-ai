@@ -1,7 +1,7 @@
-import GrowPlantAI from "./GrowPlantAI";
+import RaiAIApp from "@/components/RaiAIApp";
 
 const Index = () => {
-  return <GrowPlantAI />;
+  return <RaiAIApp />;
 };
 
 export default Index;

@@ -8,47 +8,52 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Agricultural theme - Earth tones and nature colors */
-    --background: 45 20% 98%;
-    --foreground: 120 15% 15%;
+    /* John Deere inspired agricultural theme */
+    --background: 45 15% 97%;
+    --foreground: 120 20% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 120 15% 15%;
+    --card-foreground: 120 20% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 120 15% 15%;
+    --popover-foreground: 120 20% 12%;
 
-    /* Primary: Rich forest green */
-    --primary: 120 45% 25%;
+    /* Primary: John Deere signature green */
+    --primary: 120 65% 28%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 120 35% 35%;
-    --primary-glow: 120 40% 45%;
+    --primary-light: 120 55% 38%;
+    --primary-glow: 120 45% 48%;
 
-    /* Secondary: Earth brown */
-    --secondary: 30 25% 85%;
-    --secondary-foreground: 30 15% 25%;
+    /* Secondary: Agricultural earth brown */
+    --secondary: 35 25% 88%;
+    --secondary-foreground: 35 20% 25%;
 
-    --muted: 45 15% 92%;
-    --muted-foreground: 45 8% 45%;
+    --muted: 45 12% 94%;
+    --muted-foreground: 45 10% 50%;
 
-    /* Accent: Warm golden yellow like rice */
-    --accent: 45 75% 65%;
-    --accent-foreground: 45 20% 15%;
+    /* Accent: John Deere yellow */
+    --accent: 48 95% 55%;
+    --accent-foreground: 48 25% 15%;
 
     /* Agricultural status colors */
-    --healthy: 120 50% 40%;
+    --healthy: 120 60% 32%;
     --healthy-foreground: 0 0% 100%;
-    --warning: 40 85% 55%;
-    --warning-foreground: 40 20% 15%;
-    --disease: 0 65% 50%;
+    --warning: 42 95% 50%;
+    --warning-foreground: 42 25% 15%;
+    --disease: 0 75% 45%;
     --disease-foreground: 0 0% 100%;
 
-    --destructive: 0 65% 50%;
+    /* Spray timing colors */
+    --spray-good: 120 50% 35%;
+    --spray-caution: 40 85% 50%;
+    --spray-stop: 0 70% 48%;
+
+    --destructive: 0 75% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 45 20% 88%;
-    --input: 45 20% 88%;
-    --ring: 120 45% 25%;
+    --border: 45 15% 85%;
+    --input: 45 15% 85%;
+    --ring: 120 65% 28%;
 
     --radius: 0.5rem;
 

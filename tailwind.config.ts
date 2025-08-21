@@ -67,6 +67,11 @@ export default {
 					DEFAULT: 'hsl(var(--disease))',
 					foreground: 'hsl(var(--disease-foreground))'
 				},
+				spray: {
+					good: 'hsl(var(--spray-good))',
+					caution: 'hsl(var(--spray-caution))',
+					stop: 'hsl(var(--spray-stop))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
