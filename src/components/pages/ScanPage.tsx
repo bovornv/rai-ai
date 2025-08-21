@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CropType } from "../RaiAIApp";
+import ResultActionPage from "./ResultActionPage";
 
 interface ScanPageProps {
   selectedCrop: CropType;
@@ -11,11 +12,22 @@ interface ScanPageProps {
   offlineCount: number;
 }
 
+interface DiagnosisResult {
+  disease: string;
+  diseaseEn: string;
+  confidence: 'high' | 'medium' | 'uncertain';
+  severity: number;
+  imageUrl: string;
+  crop: CropType;
+}
+
 const ScanPage = ({ selectedCrop, onBack, offlineCount }: ScanPageProps) => {
   const [isCapturing, setIsCapturing] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showMismatchBanner, setShowMismatchBanner] = useState(false);
+  const [currentCrop, setCurrentCrop] = useState<CropType>(selectedCrop);
+  const [diagnosisResult, setDiagnosisResult] = useState<DiagnosisResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCapture = () => {
@@ -40,22 +52,74 @@ const ScanPage = ({ selectedCrop, onBack, offlineCount }: ScanPageProps) => {
 
   const handleAnalyze = () => {
     setIsAnalyzing(true);
-    // Simulate analysis
+    // Simulate analysis with mock results
     setTimeout(() => {
       setIsAnalyzing(false);
-      // Would navigate to result in real app
+      const mockResults: DiagnosisResult[] = [
+        {
+          disease: "โรคใบจุดสีน้ำตาล",
+          diseaseEn: "Brown Spot Disease",
+          confidence: 'high',
+          severity: 3,
+          imageUrl: capturedImage!,
+          crop: currentCrop
+        },
+        {
+          disease: "โรคเหี่ยวเน่าราก",
+          diseaseEn: "Root Rot Disease", 
+          confidence: 'medium',
+          severity: 4,
+          imageUrl: capturedImage!,
+          crop: currentCrop
+        },
+        {
+          disease: "อาการไม่ชัดเจน",
+          diseaseEn: "Unclear Symptoms",
+          confidence: 'uncertain',
+          severity: 2,
+          imageUrl: capturedImage!,
+          crop: currentCrop
+        }
+      ];
+      
+      const randomResult = mockResults[Math.floor(Math.random() * mockResults.length)];
+      setDiagnosisResult(randomResult);
     }, 2000);
   };
 
   const retakePhoto = () => {
     setCapturedImage(null);
     setShowMismatchBanner(false);
+    setDiagnosisResult(null);
+  };
+
+  const handleCropChange = (crop: CropType) => {
+    setCurrentCrop(crop);
+    // Re-run analysis with new crop context
+    if (diagnosisResult) {
+      setDiagnosisResult({
+        ...diagnosisResult,
+        crop: crop
+      });
+    }
   };
 
   const cropNames = {
     rice: "ข้าว",
     durian: "ทุเรียน"
   };
+
+  // Show result page after successful analysis
+  if (diagnosisResult) {
+    return (
+      <ResultActionPage
+        result={diagnosisResult}
+        onBack={() => setDiagnosisResult(null)}
+        onRescan={retakePhoto}
+        onCropChange={handleCropChange}
+      />
+    );
+  }
 
   return (
     <div className="p-4 space-y-4">
@@ -64,8 +128,8 @@ const ScanPage = ({ selectedCrop, onBack, offlineCount }: ScanPageProps) => {
           ← กลับ
         </Button>
         <div className="text-center">
-          <h1 className="text-xl font-bold">สแกน{cropNames[selectedCrop]}</h1>
-          <p className="text-sm text-muted-foreground">Scan {selectedCrop === 'rice' ? 'Rice' : 'Durian'}</p>
+          <h1 className="text-xl font-bold">สแกน{cropNames[currentCrop]}</h1>
+          <p className="text-sm text-muted-foreground">Scan {currentCrop === 'rice' ? 'Rice' : 'Durian'}</p>
         </div>
         <div className="w-16"></div>
       </div>
@@ -88,13 +152,18 @@ const ScanPage = ({ selectedCrop, onBack, offlineCount }: ScanPageProps) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 text-accent-foreground" />
-                <span className="text-sm">ดูเหมือนใบ{selectedCrop === 'rice' ? 'ทุเรียน' : 'ข้าว'} เปลี่ยนเป็น '{selectedCrop === 'rice' ? 'ทุเรียน' : 'ข้าว'}' ไหม?</span>
+                <span className="text-sm">ดูเหมือนใบ{currentCrop === 'rice' ? 'ทุเรียน' : 'ข้าว'} เปลี่ยนเป็น '{currentCrop === 'rice' ? 'ทุเรียน' : 'ข้าว'}' ไหม?</span>
               </div>
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" onClick={() => setShowMismatchBanner(false)}>
                   Keep
                 </Button>
-                <Button size="sm">Change</Button>
+                <Button size="sm" onClick={() => {
+                  setCurrentCrop(currentCrop === 'rice' ? 'durian' : 'rice');
+                  setShowMismatchBanner(false);
+                }}>
+                  Change
+                </Button>
               </div>
             </div>
           </CardContent>
@@ -110,9 +179,9 @@ const ScanPage = ({ selectedCrop, onBack, offlineCount }: ScanPageProps) => {
                 <Camera className="h-12 w-12 text-muted-foreground" />
               </div>
               <div>
-                <h3 className="font-semibold mb-2">ถ่ายภาพใบ{cropNames[selectedCrop]}</h3>
+                <h3 className="font-semibold mb-2">ถ่ายภาพใบ{cropNames[currentCrop]}</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  {selectedCrop === 'rice' 
+                  {currentCrop === 'rice' 
                     ? "จับใบข้าวที่สงสัยใส่กรอบ ระยะ 20-30 ซม."
                     : "จับใบหรือผลทุเรียนใส่กรอบ ระยะ 30-40 ซม."
                   }
@@ -162,7 +231,7 @@ const ScanPage = ({ selectedCrop, onBack, offlineCount }: ScanPageProps) => {
           <div className="text-sm space-y-1">
             <p>✓ ใช้แสงธรรมชาติ หลีกเลี่ยงเงา</p>
             <p>✓ ถือมือให้นิ่ง ไม่เบลอ</p>
-            <p>✓ {selectedCrop === 'rice' ? 'ใบข้าวต้องเต็มกรอบ' : 'ใบ/ผลทุเรียนชัดเจน'}</p>
+            <p>✓ {currentCrop === 'rice' ? 'ใบข้าวต้องเต็มกรอบ' : 'ใบ/ผลทุเรียนชัดเจน'}</p>
             <p>✓ หากอาการเยอะ ถ่ายหลายจุด</p>
           </div>
         </CardContent>
