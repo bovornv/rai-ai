@@ -1,9 +1,12 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CloudRain, AlertTriangle, CheckCircle, DollarSign, Share2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CropType } from "../RaiAIApp";
+import { LocationChip } from "@/components/LocationChip";
+import { LocationBottomSheet } from "@/components/LocationBottomSheet";
+import { Analytics } from "@/lib/analytics";
 
 interface TodayPageProps {
   selectedCrop: CropType;
@@ -13,6 +16,8 @@ interface TodayPageProps {
 
 const TodayPage = ({ selectedCrop, onCropChange, onNavigate }: TodayPageProps) => {
   const [sprayStatus] = useState<'good' | 'caution' | 'stop'>('good');
+  const [currentArea, setCurrentArea] = useState<string | null>('ต.บางปลาม้า, สุพรรณบุรี');
+  const [showLocationSheet, setShowLocationSheet] = useState(false);
   
   const sprayStatusConfig = {
     good: {
@@ -38,8 +43,33 @@ const TodayPage = ({ selectedCrop, onCropChange, onNavigate }: TodayPageProps) =
   const currentSpray = sprayStatusConfig[sprayStatus];
   const SprayIcon = currentSpray.icon;
 
+  const handleLocationSet = (area: { name: string; lat: number; lng: number; geohash: string }) => {
+    setCurrentArea(area.name);
+    Analytics.trackLocationSetMethod('current', false); // This would be dynamic based on method used
+  };
+
+  // Track spray window view
+  useEffect(() => {
+    Analytics.trackSprayWindowViewed(selectedCrop, sprayStatus);
+  }, [selectedCrop, sprayStatus]);
+
   return (
     <div className="p-4 space-y-4">
+      {/* Header with Location */}
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h1 className="text-xl font-bold text-primary">วันนี้</h1>
+          <p className="text-sm text-muted-foreground">จันทร์ 21 ต.ค. 2567</p>
+        </div>
+        <LocationChip
+          currentArea={currentArea}
+          onLocationClick={() => {
+            setShowLocationSheet(true);
+            Analytics.trackLocationSheetOpened('today');
+          }}
+        />
+      </div>
+
       {/* Crop Selection Chips */}
       <div className="flex gap-2 mb-4">
         <Button
@@ -154,6 +184,13 @@ const TodayPage = ({ selectedCrop, onCropChange, onNavigate }: TodayPageProps) =
           </div>
         </CardContent>
       </Card>
+
+      <LocationBottomSheet
+        isOpen={showLocationSheet}
+        onClose={() => setShowLocationSheet(false)}
+        onLocationSet={handleLocationSet}
+        currentArea={currentArea}
+      />
     </div>
   );
 };

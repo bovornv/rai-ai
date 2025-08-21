@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CropType } from "../RaiAIApp";
 import ResultActionPage from "./ResultActionPage";
+import { MismatchBanner } from "@/components/MismatchBanner";
 
 interface ScanPageProps {
   selectedCrop: CropType;
@@ -25,9 +26,10 @@ const ScanPage = ({ selectedCrop, onBack, offlineCount }: ScanPageProps) => {
   const [isCapturing, setIsCapturing] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [showMismatchBanner, setShowMismatchBanner] = useState(false);
+  const [showLocationMismatch, setShowLocationMismatch] = useState(false);
   const [currentCrop, setCurrentCrop] = useState<CropType>(selectedCrop);
   const [diagnosisResult, setDiagnosisResult] = useState<DiagnosisResult | null>(null);
+  const [currentField] = useState('ทุ่งใต้'); // Example field name
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCapture = () => {
@@ -41,9 +43,9 @@ const ScanPage = ({ selectedCrop, onBack, offlineCount }: ScanPageProps) => {
       reader.onload = (e) => {
         setCapturedImage(e.target?.result as string);
         setIsCapturing(false);
-        // Simulate crop mismatch detection
-        if (Math.random() > 0.8) {
-          setShowMismatchBanner(true);
+        // Simulate location mismatch detection
+        if (Math.random() > 0.7) {
+          setShowLocationMismatch(true);
         }
       };
       reader.readAsDataURL(file);
@@ -89,7 +91,7 @@ const ScanPage = ({ selectedCrop, onBack, offlineCount }: ScanPageProps) => {
 
   const retakePhoto = () => {
     setCapturedImage(null);
-    setShowMismatchBanner(false);
+    setShowLocationMismatch(false);
     setDiagnosisResult(null);
   };
 
@@ -145,29 +147,20 @@ const ScanPage = ({ selectedCrop, onBack, offlineCount }: ScanPageProps) => {
         </Card>
       )}
 
-      {/* Crop Mismatch Banner */}
-      {showMismatchBanner && (
-        <Card className="border-accent bg-accent/10">
-          <CardContent className="p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-accent-foreground" />
-                <span className="text-sm">ดูเหมือนใบ{currentCrop === 'rice' ? 'ทุเรียน' : 'ข้าว'} เปลี่ยนเป็น '{currentCrop === 'rice' ? 'ทุเรียน' : 'ข้าว'}' ไหม?</span>
-              </div>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={() => setShowMismatchBanner(false)}>
-                  Keep
-                </Button>
-                <Button size="sm" onClick={() => {
-                  setCurrentCrop(currentCrop === 'rice' ? 'durian' : 'rice');
-                  setShowMismatchBanner(false);
-                }}>
-                  Change
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Location Mismatch Banner */}
+      {showLocationMismatch && (
+        <MismatchBanner
+          fieldName={currentField}
+          onUseFieldLocation={() => {
+            setShowLocationMismatch(false);
+            // Logic to use field location
+          }}
+          onKeepCurrentLocation={() => {
+            setShowLocationMismatch(false);
+            // Logic to keep current location
+          }}
+          onDismiss={() => setShowLocationMismatch(false)}
+        />
       )}
 
       {/* Camera/Image Area */}

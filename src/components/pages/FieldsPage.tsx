@@ -5,6 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { CropType } from "../RaiAIApp";
+import { FieldLocationRow } from "@/components/FieldLocationRow";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Field {
   id: string;
@@ -24,6 +29,13 @@ interface FieldsPageProps {
 }
 
 const FieldsPage = ({ selectedCrop }: FieldsPageProps) => {
+  const [showAddField, setShowAddField] = useState(false);
+  const [newField, setNewField] = useState({
+    name: '',
+    crop: selectedCrop,
+    area: '',
+    location: null as { lat: number; lng: number; name: string } | null
+  });
   const [fields] = useState<Field[]>([
     {
       id: '1',
@@ -80,10 +92,80 @@ const FieldsPage = ({ selectedCrop }: FieldsPageProps) => {
         <h1 className="text-xl font-bold">
           {selectedCrop === 'rice' ? 'แปลงข้าว · Rice Fields' : 'สวนทุเรียน · Durian Orchards'}
         </h1>
-        <Button size="sm" className="gap-2">
-          <Plus className="h-4 w-4" />
-          เพิ่ม
-        </Button>
+        <Dialog open={showAddField} onOpenChange={setShowAddField}>
+          <DialogTrigger asChild>
+            <Button size="sm" className="gap-2">
+              <Plus className="h-4 w-4" />
+              เพิ่มแปลง
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>เพิ่มแปลงใหม่</DialogTitle>
+              <DialogDescription>
+                กรอกข้อมูลแปลงของคุณ
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div>
+                <Label>ชื่อแปลง</Label>
+                <Input
+                  value={newField.name}
+                  onChange={(e) => setNewField({ ...newField, name: e.target.value })}
+                  placeholder="เช่น ทุ่งใต้, สวนหลังบ้าน"
+                />
+              </div>
+              
+              <div>
+                <Label>พืชที่ปลูก</Label>
+                <Select value={newField.crop} onValueChange={(value: any) => setNewField({ ...newField, crop: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="rice">ข้าว</SelectItem>
+                    <SelectItem value="durian">ทุเรียน</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label>ขนาดพื้นที่</Label>
+                <Input
+                  value={newField.area}
+                  onChange={(e) => setNewField({ ...newField, area: e.target.value })}
+                  placeholder="เช่น 5 ไร่, 20 ต้น"
+                />
+              </div>
+              
+              <FieldLocationRow
+                currentLocation={newField.location}
+                onLocationSet={(location) => setNewField({ ...newField, location })}
+              />
+              
+              <div className="flex gap-2 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAddField(false)}
+                  className="flex-1"
+                >
+                  ยกเลิก
+                </Button>
+                <Button
+                  onClick={() => {
+                    // Save field logic here
+                    setShowAddField(false);
+                    setNewField({ name: '', crop: selectedCrop, area: '', location: null });
+                  }}
+                  className="flex-1"
+                >
+                  บันทึก
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Summary Stats */}
