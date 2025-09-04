@@ -125,7 +125,22 @@ const TodayPage = ({ selectedCrop, onCropChange, onNavigate }: TodayPageProps) =
           <p className="text-xs text-muted-foreground">
             แนะนำ: ตรวจสอบใบข้าวทุกวัน และฉีดป้องกันหากพบอาการ
           </p>
-          <Button size="sm" variant="outline" className="gap-2">
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="gap-2"
+            onClick={() => {
+              Analytics.trackOutbreakAlertShared(selectedCrop, 'โรคใบจุดสีน้ำตาล');
+              // Generate share card for LINE/TikTok
+              const shareText = `⚠️ เตือน! โรคใบจุดสีน้ำตาลระบาดใน${currentArea}\n\nเกษตรกรในพื้นที่ควรเฝ้าระวังและตรวจสอบพืชผลทุกวัน\n\n#RaiAI #เกษตรไทย`;
+              if (navigator.share) {
+                navigator.share({
+                  title: 'เตือนโรคระบาด - RaiAI',
+                  text: shareText
+                });
+              }
+            }}
+          >
             <Share2 className="h-4 w-4" />
             แชร์เตือนเพื่อนบ้าน
           </Button>
@@ -177,9 +192,16 @@ const TodayPage = ({ selectedCrop, onCropChange, onNavigate }: TodayPageProps) =
             <div className="text-center">
               <div className="text-sm text-muted-foreground">เป้าหมาย</div>
               <div className="text-lg font-semibold">13,000</div>
-              <Button size="sm" variant="outline" className="mt-1">
-                ตั้งแจ้งเตือน
-              </Button>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="mt-1"
+              onClick={() => {
+                Analytics.trackPriceAlertSet(selectedCrop, 13000);
+              }}
+            >
+              ตั้งแจ้งเตือน
+            </Button>
             </div>
           </div>
         </CardContent>

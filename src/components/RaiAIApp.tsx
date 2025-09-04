@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Home, Scan, MapPin, Menu, Plus } from "lucide-react";
+import { Home, Scan, MapPin, Menu, Plus, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
@@ -11,9 +11,10 @@ import FieldsPage from "./pages/FieldsPage";
 import SellPricesPage from "./pages/SellPricesPage";
 import HelpCommunityPage from "./pages/HelpCommunityPage";
 import SettingsPage from "./pages/SettingsPage";
+import CounterMode from "./CounterMode";
 
 type MainView = 'today' | 'scan' | 'fields';
-type DrawerView = 'sell' | 'help' | 'settings';
+type DrawerView = 'sell' | 'help' | 'settings' | 'counter';
 
 export type CropType = 'rice' | 'durian';
 
@@ -43,6 +44,8 @@ const RaiAIApp = () => {
           return <HelpCommunityPage onBack={() => setDrawerView(null)} />;
         case 'settings':
           return <SettingsPage onBack={() => setDrawerView(null)} />;
+        case 'counter':
+          return <CounterMode onClose={() => setDrawerView(null)} />;
         default:
           return null;
       }
@@ -108,6 +111,18 @@ const RaiAIApp = () => {
                 }}
               >
                 ตั้งค่า · Settings
+              </Button>
+              <div className="border-t my-4"></div>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start text-lg py-6 text-accent"
+                onClick={() => {
+                  setDrawerView('counter');
+                  setCurrentView('today');
+                }}
+              >
+                <Store className="h-5 w-5 mr-2" />
+                เคาน์เตอร์ร้านค้า · Counter Mode
               </Button>
             </div>
           </SheetContent>

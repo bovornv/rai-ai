@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { CropType } from "../RaiAIApp";
+import { Analytics } from "@/lib/analytics";
 
 interface Buyer {
   id: string;
@@ -145,7 +146,14 @@ const SellPricesPage = ({ onBack, selectedCrop }: SellPricesPageProps) => {
               onChange={(e) => setTargetPrice(e.target.value)}
               type="number"
             />
-            <Button>
+            <Button
+              onClick={() => {
+                const price = parseFloat(targetPrice);
+                if (price > 0) {
+                  Analytics.trackPriceAlertSet(selectedCrop, price);
+                }
+              }}
+            >
               ตั้งแจ้งเตือน
             </Button>
           </div>
@@ -178,12 +186,28 @@ const SellPricesPage = ({ onBack, selectedCrop }: SellPricesPageProps) => {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="gap-1">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => {
+                    Analytics.trackBuyerContacted('call');
+                    window.location.href = `tel:${buyer.phone}`;
+                  }}
+                  className="gap-1"
+                >
                   <Phone className="h-3 w-3" />
                   โทร
                 </Button>
                 {buyer.lineId && (
-                  <Button size="sm" variant="outline" className="gap-1">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="gap-1"
+                    onClick={() => {
+                      Analytics.trackBuyerContacted('line');
+                      window.open(`https://line.me/ti/p/@${buyer.lineId}`, '_blank');
+                    }}
+                  >
                     <MessageCircle className="h-3 w-3" />
                     LINE
                   </Button>

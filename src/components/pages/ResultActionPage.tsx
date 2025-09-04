@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CropType } from "../RaiAIApp";
+import { Analytics } from "@/lib/analytics";
+import ShopTicket from "../ShopTicket";
 
 interface DiagnosisResult {
   disease: string;
@@ -26,6 +28,7 @@ interface ResultActionPageProps {
 const ResultActionPage = ({ result, onBack, onRescan, onCropChange }: ResultActionPageProps) => {
   const [tankSize, setTankSize] = useState<string>('20');
   const [reminderSet, setReminderSet] = useState(false);
+  const [showShopTicket, setShowShopTicket] = useState(false);
   const [ppeChecklist, setPpeChecklist] = useState({
     mask: false,
     gloves: false,
@@ -210,7 +213,10 @@ const ResultActionPage = ({ result, onBack, onRescan, onCropChange }: ResultActi
             </Button>
           </div>
           <Button 
-            onClick={() => setReminderSet(true)}
+            onClick={() => {
+              setReminderSet(true);
+              Analytics.trackReminderSet('scan_followup');
+            }}
             disabled={reminderSet}
             className="w-full gap-2"
           >
@@ -236,7 +242,15 @@ const ResultActionPage = ({ result, onBack, onRescan, onCropChange }: ResultActi
               onChange={(e) => setTankSize(e.target.value)}
               type="number"
             />
-            <Button variant="outline">คำนวณ</Button>
+            <Button 
+              variant="outline"
+              onClick={() => {
+                Analytics.trackMixCalculatorUsed();
+                // Calculation happens automatically when tankSize changes
+              }}
+            >
+              คำนวณ
+            </Button>
           </div>
           <div className="p-3 bg-muted rounded-lg">
             <div className="text-sm">
@@ -278,7 +292,11 @@ const ResultActionPage = ({ result, onBack, onRescan, onCropChange }: ResultActi
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          <Button variant="outline" className="w-full gap-2">
+          <Button 
+            variant="outline" 
+            className="w-full gap-2"
+            onClick={() => setShowShopTicket(true)}
+          >
             <Share2 className="h-4 w-4" />
             ใบสั่งซื้อยา · Shop Ticket
           </Button>
@@ -288,6 +306,13 @@ const ResultActionPage = ({ result, onBack, onRescan, onCropChange }: ResultActi
           </Button>
         </CardContent>
       </Card>
+      
+      {showShopTicket && (
+        <ShopTicket
+          diagnosis={result}
+          onClose={() => setShowShopTicket(false)}
+        />
+      )}
     </div>
   );
 };
