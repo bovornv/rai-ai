@@ -12,7 +12,12 @@
     { "source": "/(.*)", "destination": "/" }
   ],
   "redirects": [
-    { "source": "https://www.raiai.app/(.*)", "destination": "https://raiai.app/$1", "permanent": true }
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.raiai.app" }],
+      "destination": "https://raiai.app/:path*",
+      "permanent": true
+    }
   ],
   "headers": [
     {
