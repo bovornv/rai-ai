@@ -12,6 +12,7 @@ import { getSprayWindow, getWeatherData } from "@/lib/weather-service";
 import { getOutbreaksNearLocation } from "@/lib/outbreak-service";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getCurrentThaiDate } from "@/lib/date-utils";
+import { SprayWindowBadge } from "@/components/SprayWindowBadge";
 
 interface TodayPageProps {
   selectedCrop: CropType;
@@ -119,10 +120,10 @@ const TodayPage = ({ selectedCrop, onCropChange, onNavigate }: TodayPageProps) =
   return (
     <div className="p-4 space-y-4">
       {/* Header with Location */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-primary">วันนี้</h1>
-          <p className="text-sm text-muted-foreground">{getCurrentThaiDate()}</p>
+          <h1 className="font-thai text-farmer-4xl font-bold text-jd-green-dark">วันนี้</h1>
+          <p className="font-thai text-farmer-lg text-gray-600">{getCurrentThaiDate()}</p>
         </div>
         <LocationChip
           currentArea={currentArea}
@@ -134,20 +135,28 @@ const TodayPage = ({ selectedCrop, onCropChange, onNavigate }: TodayPageProps) =
       </div>
 
       {/* Crop Selection Chips */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-4 mb-6">
         <Button
           variant={selectedCrop === 'rice' ? 'default' : 'outline'}
-          size="sm"
+          size="lg"
           onClick={() => onCropChange('rice')}
-          className="rounded-full"
+          className={`farmer-button rounded-full font-thai text-farmer-lg font-bold px-8 py-4 ${
+            selectedCrop === 'rice' 
+              ? 'bg-jd-green text-white hover:bg-jd-green-dark' 
+              : 'border-2 border-jd-green text-jd-green hover:bg-jd-green hover:text-white'
+          }`}
         >
           🌾 ข้าว
         </Button>
         <Button
           variant={selectedCrop === 'durian' ? 'default' : 'outline'}
-          size="sm"
+          size="lg"
           onClick={() => onCropChange('durian')}
-          className="rounded-full"
+          className={`farmer-button rounded-full font-thai text-farmer-lg font-bold px-8 py-4 ${
+            selectedCrop === 'durian' 
+              ? 'bg-jd-green text-white hover:bg-jd-green-dark' 
+              : 'border-2 border-jd-green text-jd-green hover:bg-jd-green hover:text-white'
+          }`}
         >
           🌿 ทุเรียน
         </Button>
@@ -193,66 +202,12 @@ const TodayPage = ({ selectedCrop, onCropChange, onNavigate }: TodayPageProps) =
         </CardContent>
       </Card>
 
-      {/* Spray Window Card */}
-      <Card className="border-2 border-green-200 bg-green-50 shadow-lg">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <SprayIcon className="h-5 w-5" />
-            ช่วงเวลาฉีดพ่น · Spray Window
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Badge className={`${currentSpray.color} px-4 py-2 text-sm font-bold`}>
-              {currentSpray.text}
-            </Badge>
-            <span className="text-xs text-muted-foreground">
-              Status: {sprayStatus}
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {sprayData?.recommendation || currentSpray.description}
-          </p>
-          
-          {/* Weather details */}
-          {sprayData && (
-            <div className="grid grid-cols-3 gap-2 text-xs">
-              <div className="flex items-center gap-1">
-                <Wind className="h-3 w-3" />
-                <span>{sprayData.windSpeed.toFixed(1)} km/h</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Droplets className="h-3 w-3" />
-                <span>{sprayData.rainProbability.toFixed(0)}%</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Thermometer className="h-3 w-3" />
-                <span>{sprayData.temperature.toFixed(0)}°C</span>
-              </div>
-            </div>
-          )}
-          
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <CloudRain className="h-4 w-4" />
-              อัปเดตล่าสุด: {new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
-            </div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                setShareCategory('spray');
-                setShowShareCard(true);
-                Analytics.trackSprayWindowShared(selectedCrop, sprayStatus);
-              }}
-              className="gap-1"
-            >
-              <Share2 className="h-3 w-3" />
-              แชร์
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Spray Window Badge - Big, prominent, daily use */}
+      <SprayWindowBadge 
+        onReminderSet={() => {
+          Analytics.trackSprayWindowReminderSet(selectedCrop, sprayStatus);
+        }}
+      />
 
       {/* Outbreak Radar */}
       <Card className="border-2 border-warning/30 bg-warning/5">

@@ -54,6 +54,18 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				/* John Deere inspired colors */
+				'jd-green': '#1E6F41',
+				'jd-yellow': '#F9DD30',
+				'jd-green-light': '#2D8F5A',
+				'jd-green-dark': '#155A33',
+				'jd-yellow-light': '#FCEA5A',
+				'jd-yellow-dark': '#E6C700',
+				/* Thai farmer friendly colors */
+				'thai-green': '#2D5016',
+				'thai-gold': '#D4AF37',
+				'thai-red': '#B22222',
+				'thai-blue': '#0066CC',
 				/* Agricultural status colors */
 				healthy: {
 					DEFAULT: 'hsl(var(--healthy))',
@@ -82,6 +94,21 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				}
+			},
+			fontFamily: {
+				'thai': ['Kanit', 'Prompt', 'Sarabun', 'sans-serif'],
+				'deere': ['Arial', 'Helvetica', 'sans-serif'],
+			},
+			fontSize: {
+				'farmer-xs': ['0.875rem', { lineHeight: '1.25rem' }],
+				'farmer-sm': ['1rem', { lineHeight: '1.5rem' }],
+				'farmer-base': ['1.125rem', { lineHeight: '1.75rem' }],
+				'farmer-lg': ['1.25rem', { lineHeight: '1.75rem' }],
+				'farmer-xl': ['1.5rem', { lineHeight: '2rem' }],
+				'farmer-2xl': ['1.875rem', { lineHeight: '2.25rem' }],
+				'farmer-3xl': ['2.25rem', { lineHeight: '2.5rem' }],
+				'farmer-4xl': ['3rem', { lineHeight: '1' }],
+				'farmer-5xl': ['3.75rem', { lineHeight: '1' }],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

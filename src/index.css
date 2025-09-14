@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -18,22 +20,22 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 120 20% 12%;
 
-    /* Primary: John Deere signature green */
+    /* Primary: John Deere signature green (#1E6F41) */
     --primary: 120 65% 28%;
     --primary-foreground: 0 0% 100%;
     --primary-light: 120 55% 38%;
     --primary-glow: 120 45% 48%;
 
-    /* Secondary: Agricultural earth brown */
-    --secondary: 35 25% 88%;
-    --secondary-foreground: 35 20% 25%;
+    /* Secondary: John Deere yellow (#F9DD30) */
+    --secondary: 48 95% 55%;
+    --secondary-foreground: 48 25% 15%;
 
     --muted: 45 12% 94%;
     --muted-foreground: 45 10% 50%;
 
-    /* Accent: John Deere yellow */
-    --accent: 48 95% 55%;
-    --accent-foreground: 48 25% 15%;
+    /* Accent: Thai gold for highlights */
+    --accent: 45 65% 50%;
+    --accent-foreground: 45 25% 15%;
 
     /* Agricultural status colors */
     --healthy: 120 60% 32%;
@@ -129,6 +131,36 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-thai;
+    font-size: 16px; /* Base font size for better readability */
+  }
+
+  /* Thai farmer-friendly typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-thai font-semibold;
+  }
+
+  /* Big, clear buttons for farmers */
+  .farmer-button {
+    @apply font-thai font-medium text-farmer-lg px-6 py-4 rounded-lg;
+    min-height: 48px; /* Touch-friendly size */
+  }
+
+  /* Clear, readable text for farmers */
+  .farmer-text {
+    @apply font-thai text-farmer-base leading-relaxed;
+  }
+
+  /* Status indicators with clear colors */
+  .status-good {
+    @apply bg-jd-green text-white;
+  }
+
+  .status-caution {
+    @apply bg-jd-yellow text-jd-green-dark;
+  }
+
+  .status-danger {
+    @apply bg-thai-red text-white;
   }
 }
