@@ -32,6 +32,7 @@ VERSION=${version}
 NODE_ENV=production
 REGION=thailand
 API_BASE_URL=https://api.raiai.app
+VITE_API_BASE_URL=https://api.raiai.app
 
 # Feature flags
 ANALYTICS_INGEST_KEY=dev-ingest

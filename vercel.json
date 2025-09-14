@@ -12,6 +12,9 @@
       "dest": "dist/server.js"
     }
   ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ],
   "env": {
     "NODE_ENV": "production",
     "REGION": "thailand",

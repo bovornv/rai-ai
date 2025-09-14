@@ -16,7 +16,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ["https://raiai.app", "https://www.raiai.app", "http://localhost:8080"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: false
+}));
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
