@@ -1,0 +1,70 @@
+name: Deploy RaiAI API
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # so 'git describe' and full history work
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test --if-present
+
+      - name: Build (inject build vars)
+        env:
+          GIT_COMMIT: ${{ github.sha }}
+        run: |
+          export BUILD_TIME="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          echo "Using GIT_COMMIT=$GIT_COMMIT BUILD_TIME=$BUILD_TIME"
+          
+          # Persist to .env.production for runtime
+          printf "GIT_COMMIT=%s\nBUILD_TIME=%s\nNODE_ENV=production\nREGION=thailand\nAPI_BASE_URL=https://api.raiai.app\n" "$GIT_COMMIT" "$BUILD_TIME" > .env.production
+          
+          # Build the application
+          npm run build
+
+      - name: Create deployment artifact
+        run: |
+          tar -czf raiai-api-${GIT_COMMIT}.tar.gz dist/ package.json .env.production
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: raiai-api-${{ github.sha }}
+          path: raiai-api-*.tar.gz
+
+      # ⬇️ Replace with your actual deploy step (Render, Railway, EC2, etc.)
+      - name: Deploy to production
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "🚀 Deploying RaiAI API version $GIT_COMMIT"
+          echo "Build time: $BUILD_TIME"
+          # Add your deployment commands here:
+          # - rsync to server
+          # - docker push
+          # - cloud provider CLI commands
+          echo "✅ Deployment completed"
+
+      - name: Notify deployment
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "📢 RaiAI API deployed successfully!"
+          echo "Version: $GIT_COMMIT"
+          echo "Build time: $BUILD_TIME"
+          # Add notification webhook here if needed

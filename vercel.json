@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "dist/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "dist/server.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "REGION": "thailand",
+    "API_BASE_URL": "https://api.raiai.app"
+  },
+  "build": {
+    "env": {
+      "GIT_COMMIT": "@vercel-git-commit-sha",
+      "BUILD_TIME": "@vercel-deployment-created-at"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: raiai-api
+    env: node
+    plan: starter
+    buildCommand: |
+      export GIT_COMMIT=$RENDER_GIT_COMMIT && \
+      export BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ") && \
+      echo "GIT_COMMIT=$GIT_COMMIT" >> .env && \
+      echo "BUILD_TIME=$BUILD_TIME" >> .env && \
+      npm ci && npm run build
+    startCommand: node dist/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REGION
+        value: thailand
+      - key: API_BASE_URL
+        value: https://api.raiai.app
+      - key: GIT_COMMIT
+        fromService:
+          type: web
+          name: raiai-api
+          property: gitCommit
+      - key: BUILD_TIME
+        fromService:
+          type: web
+          name: raiai-api
+          property: buildTime
+    healthCheckPath: /health
+    autoDeploy: true
+    branch: main

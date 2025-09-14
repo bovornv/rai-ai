@@ -1,0 +1,78 @@
+{
+  "title": "RaiAI • Analytics KPIs",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "overwrite": true,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "DAU (today)",
+      "gridPos": {"x":0,"y":0,"w":6,"h":4},
+      "targets": [{
+        "datasource": {"type":"frser-sqlite-datasource","uid":"sqlite"},
+        "queryText": "SELECT COUNT(DISTINCT COALESCE(user_id, anon_id)) AS dau\nFROM analytics_events\nWHERE ts >= date('now','start of day') AND ts < date('now','start of day','+1 day');"
+      }]
+    },
+    {
+      "type": "stat",
+      "title": "WAU",
+      "gridPos": {"x":6,"y":0,"w":6,"h":4},
+      "targets": [{
+        "datasource": {"type":"frser-sqlite-datasource","uid":"sqlite"},
+        "queryText": "SELECT COUNT(DISTINCT COALESCE(user_id, anon_id)) AS wau\nFROM analytics_events\nWHERE ts >= datetime('now','-7 day') AND ts < datetime('now');"
+      }]
+    },
+    {
+      "type": "stat",
+      "title": "MAU",
+      "gridPos": {"x":12,"y":0,"w":6,"h":4},
+      "targets": [{
+        "datasource": {"type":"frser-sqlite-datasource","uid":"sqlite"},
+        "queryText": "SELECT COUNT(DISTINCT COALESCE(user_id, anon_id)) AS mau\nFROM analytics_events\nWHERE ts >= datetime('now','-30 day') AND ts < datetime('now');"
+      }]
+    },
+    {
+      "type": "graph",
+      "title": "Daily Active Users (last 30d)",
+      "gridPos": {"x":0,"y":4,"w":12,"h":8},
+      "targets": [{
+        "datasource": {"type":"frser-sqlite-datasource","uid":"sqlite"},
+        "format": "time_series",
+        "queryText": "SELECT date(ts) AS time, COUNT(DISTINCT COALESCE(user_id, anon_id)) AS dau\nFROM analytics_events\nWHERE ts >= datetime('now','-30 day')\nGROUP BY date(ts)\nORDER BY date(ts);"
+      }],
+      "xaxis": {"mode":"time"}
+    },
+    {
+      "type": "graph",
+      "title": "Inference latency p50/p95 (ms)",
+      "gridPos": {"x":12,"y":4,"w":12,"h":8},
+      "targets": [{
+        "datasource": {"type":"frser-sqlite-datasource","uid":"sqlite"},
+        "format": "time_series",
+        "queryText": "WITH by_day AS (\n  SELECT date(ts) AS d,\n         CAST(json_extract(props,'$.infer_ms') AS REAL) AS v\n  FROM analytics_events\n  WHERE event_name='classify_done'\n    AND json_type(json_extract(props,'$.infer_ms'))='number'\n)\nSELECT d AS time,\n  (SELECT v FROM by_day b2 WHERE b2.d=b1.d ORDER BY v LIMIT 1 OFFSET CAST(0.50*COUNT(*) OVER (PARTITION BY d) AS INT)) AS p50,\n  (SELECT v FROM by_day b2 WHERE b2.d=b1.d ORDER BY v LIMIT 1 OFFSET CAST(0.95*COUNT(*) OVER (PARTITION BY d) AS INT)) AS p95\nFROM by_day b1\nGROUP BY d\nORDER BY d;"
+      }],
+      "xaxis": {"mode":"time"}
+    },
+    {
+      "type": "table",
+      "title": "Top events (last 7d)",
+      "gridPos": {"x":0,"y":12,"w":12,"h":10},
+      "targets": [{
+        "datasource": {"type":"frser-sqlite-datasource","uid":"sqlite"},
+        "queryText": "SELECT event_name, COUNT(*) AS cnt\nFROM analytics_events\nWHERE ts >= datetime('now','-7 day')\nGROUP BY event_name\nORDER BY cnt DESC\nLIMIT 20;"
+      }]
+    },
+    {
+      "type": "graph",
+      "title": "Scan → Action conversion (daily est.)",
+      "gridPos": {"x":12,"y":12,"w":12,"h":10},
+      "targets": [{
+        "datasource": {"type":"frser-sqlite-datasource","uid":"sqlite"},
+        "format": "time_series",
+        "queryText": "WITH scans AS (\n  SELECT date(ts) AS d, COALESCE(user_id,anon_id) AS uid, ts\n  FROM analytics_events\n  WHERE event_name='classify_done' AND ts >= datetime('now','-30 day')\n), acts AS (\n  SELECT date(s.ts) AS d, s.uid\n  FROM scans s\n  JOIN analytics_events e ON COALESCE(e.user_id,e.anon_id)=s.uid\n   AND e.event_name IN ('set_reminder','shop_ticket_created')\n   AND e.ts>=s.ts AND e.ts<=datetime(s.ts,'+1 day')\n  GROUP BY d, s.uid\n), agg AS (\n  SELECT d,\n         COUNT(*) AS scans,\n         (SELECT COUNT(*) FROM acts a WHERE a.d=sc.d) AS acts\n  FROM scans sc GROUP BY d\n)\nSELECT d AS time, (CASE WHEN scans=0 THEN 0 ELSE 100.0*acts*1.0/scans END) AS conv_pct\nFROM agg ORDER BY d;"
+      }],
+      "xaxis": {"mode":"time"}
+    }
+  ]
+}
